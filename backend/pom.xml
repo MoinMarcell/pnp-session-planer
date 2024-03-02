@@ -9,10 +9,14 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.github.moinmarcell</groupId>
-    <artifactId>backend</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
-    <name>backend</name>
-    <description>backend</description>
+    <artifactId>pnp-session-planer</artifactId>
+    <version>1.0.0</version>
+    <name>PNP Session Planer</name>
+    <description>
+        A simple session planer for Pen and Paper RPGs.
+        You can create an Event and add Sessions to it.
+        The Sessions can be created by the Game Master and Players can join them.
+    </description>
     <properties>
         <java.version>21</java.version>
     </properties>
@@ -25,6 +29,10 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -36,9 +44,16 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>de.flapdoodle.embed</groupId>
+            <artifactId>de.flapdoodle.embed.mongo.spring3x</artifactId>
+            <version>4.12.2</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
+        <finalName>pnp-session-planer-app</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
