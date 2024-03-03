@@ -29,7 +29,7 @@ interface Props {
     children?: React.ReactElement;
 }
 
-function ScrollTop(props: Props) {
+function ScrollTop(props: Readonly<Props>) {
     const {children, window} = props;
     const trigger = useScrollTrigger({
         target: window ? window() : undefined,
@@ -62,7 +62,7 @@ function ScrollTop(props: Props) {
     );
 }
 
-export default function Header(props: Props) {
+export default function Header(props: Readonly<Props>) {
     const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
 
     const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
