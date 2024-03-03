@@ -1,8 +1,4 @@
 body, #root {
     margin: 0;
     padding: 0;
-    min-height: 100vh;
-    background-color: #292727;
-    font-family: "Roboto", sans-serif;
-    color: darkgrey;
 }
