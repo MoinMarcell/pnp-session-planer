@@ -1,9 +1,10 @@
 import Layout from "./components/Layout.tsx";
+import EventApp from "./components/events/EventApp.tsx";
 
 export default function App() {
     return (
         <Layout>
-            <h1>Hello World</h1>
+            <EventApp/>
         </Layout>
     )
 }
