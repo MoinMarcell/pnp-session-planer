@@ -1,9 +1,19 @@
-import './EventApp.css';
+import {useState} from "react";
+import NewEventDialog from "./NewEventDialog.tsx";
+import useEvents from "../../hooks/useEvents.ts";
 
 export default function EventApp() {
+    const [openNewEventDialog, setOpenNewEventDialog] = useState<boolean>(false);
+    const {saveEvent} = useEvents();
+
+    function handleNewEventDialog() {
+        setOpenNewEventDialog(!openNewEventDialog);
+    }
+
     return (
-        <div className="event-app">
-            <button>Neues Event erstellen</button>
-        </div>
+        <>
+            <button onClick={handleNewEventDialog}>Neues Event erstellen</button>
+            <NewEventDialog handleSave={saveEvent} open={openNewEventDialog} handleClose={handleNewEventDialog}/>
+        </>
     );
 }
