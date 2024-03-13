@@ -12,8 +12,8 @@ export default function useEvents() {
                 setEvents([...events, response.data]);
                 return response.data;
             })
-            .catch(error => {
-                throw new error;
+            .catch((error) => {
+                throw new Error(error);
             })
     }
 

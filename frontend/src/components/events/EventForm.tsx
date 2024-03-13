@@ -8,6 +8,7 @@ import {toast} from "react-toastify";
 
 type EventFormProps = {
     handleSave: (event: EventDto) => Promise<Event>,
+    handleClose: () => void,
 }
 
 export default function EventForm(props: Readonly<EventFormProps>) {
@@ -54,10 +55,11 @@ export default function EventForm(props: Readonly<EventFormProps>) {
                     isLoading: false,
                 });
                 resetForm();
+                props.handleClose();
             })
-            .catch((e) => {
+            .catch(() => {
                 toast.update(toastId, {
-                    render: "Fehler: " + e.message,
+                    render: "Fehler beim Erstellen des Events!",
                     type: 'error',
                     autoClose: 5000,
                     isLoading: false,

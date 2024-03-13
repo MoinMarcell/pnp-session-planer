@@ -24,7 +24,7 @@ export default function NewEventDialog(props: Readonly<NewEventDialogProps>) {
                 <DialogContentText>
                     Hier kannst du ein neues Event erstellen und direkt veröffentlichen!
                 </DialogContentText>
-                <EventForm handleSave={props.handleSave}/>
+                <EventForm handleClose={props.handleClose} handleSave={props.handleSave}/>
             </DialogContent>
             <DialogActions>
                 <Button onClick={props.handleClose} type='button'>Abbrechen</Button>
