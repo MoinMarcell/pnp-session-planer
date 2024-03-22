@@ -23,17 +23,33 @@ export default function EventDetailsPage(props: Readonly<EventDetailsPageProps>)
     function deleteEvent() {
         if (event) {
             setIsDeleting(true);
+            const toastId = toast.loading("Event wird gelöscht...");
             props.deleteEvent(event.id)
                 .then((r) => {
-                    toast.success(r);
+                    toast.update(toastId, {
+                        render: r,
+                        type: 'success',
+                        autoClose: 5000,
+                        isLoading: false,
+                    });
                     navigate('/events');
                 })
                 .catch((error) => {
                     const code = error.response.status;
                     if (code === 404) {
-                        toast.error('Event not found');
+                        toast.update(toastId, {
+                            render: "Das Event wurde nicht gefunden!",
+                            type: 'error',
+                            autoClose: 5000,
+                            isLoading: false,
+                        });
                     } else {
-                        toast.error('Failed to delete event: ' + error.message);
+                        toast.update(toastId, {
+                            render: "Fehler beim Löschen des Events: " + error.message,
+                            type: 'error',
+                            autoClose: 5000,
+                            isLoading: false,
+                        });
                     }
                 })
                 .finally(() => setIsDeleting(false));
