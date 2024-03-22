@@ -248,7 +248,7 @@ class EventControllerTest {
 
         mockMvc.perform(delete(EVENT_API_ENDPOINT + "/" + savedEvent.getId()))
                 .andExpect(status().isOk())
-                .andExpect(content().string("Event with id " + savedEvent.getId() + " deleted"));
+                .andExpect(content().string("Event " + savedEvent.getTitle() + " deleted"));
     }
 
     @Test

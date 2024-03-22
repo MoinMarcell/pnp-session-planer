@@ -36,7 +36,7 @@ public class EventService {
     String deleteById(@NotNull String id) {
         Event event = getEventById(id);
         eventRepository.delete(event);
-        return "Event with id " + id + " deleted";
+        return "Event " + event.getTitle() + " deleted";
     }
 
     private boolean isValidEventDuration(@NotNull EventDto eventDto) {
