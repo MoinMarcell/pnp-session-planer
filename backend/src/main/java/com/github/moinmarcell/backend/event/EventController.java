@@ -36,6 +36,14 @@ public class EventController {
         return eventService.getAllEvents();
     }
 
+    @DeleteMapping(
+            path = "/{id}",
+            produces = "plain/text"
+    )
+    public String deleteById(@PathVariable String id) {
+        return eventService.deleteById(id);
+    }
+
     @ExceptionHandler(NoSuchElementException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public String handleNoSuchElementException(NoSuchElementException exception) {

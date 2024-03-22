@@ -33,6 +33,12 @@ public class EventService {
         return eventRepository.findAllByIdAndTitle();
     }
 
+    String deleteById(@NotNull String id) {
+        Event event = getEventById(id);
+        eventRepository.delete(event);
+        return "Event with id " + id + " deleted";
+    }
+
     private boolean isValidEventDuration(@NotNull EventDto eventDto) {
         return eventDto.start().isBefore(eventDto.end()) && !eventDto.start().isEqual(eventDto.end());
     }
