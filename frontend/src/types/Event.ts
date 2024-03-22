@@ -7,6 +7,11 @@ export type Event = {
     end: string,
 }
 
+export type EventWithIdAndTitle = {
+    id: string,
+    title: string,
+}
+
 export type EventDto = {
     title: string,
     description: string,
