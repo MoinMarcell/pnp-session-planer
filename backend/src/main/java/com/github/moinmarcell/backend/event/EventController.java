@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.NoSuchElementException;
 
 @RestController
@@ -28,6 +29,11 @@ public class EventController {
     )
     public Event getEventById(@PathVariable String id) {
         return eventService.getEventById(id);
+    }
+
+    @GetMapping
+    public List<EventWithIdAndTitle> getAllEvents() {
+        return eventService.getAllEvents();
     }
 
     @ExceptionHandler(NoSuchElementException.class)

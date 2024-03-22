@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.List;
 import java.util.NoSuchElementException;
 
 @Service
@@ -26,6 +27,10 @@ public class EventService {
         return eventRepository
                 .findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Event not found"));
+    }
+
+    List<EventWithIdAndTitle> getAllEvents() {
+        return eventRepository.findAllByIdAndTitle();
     }
 
     private boolean isValidEventDuration(@NotNull EventDto eventDto) {
