@@ -15,8 +15,7 @@ import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -226,5 +225,37 @@ class EventControllerTest {
         mockMvc.perform(get(EVENT_API_ENDPOINT))
                 .andExpect(status().isOk())
                 .andExpect(content().json("[]"));
+    }
+
+    @Test
+    @DisplayName("Delete event by id - expect status 200 and message when event deleted")
+    void deleteById_expectStatus200AndMessage_whenEventDeleted() throws Exception {
+        EventDto eventDto = new EventDto(
+                "title",
+                "description",
+                "location",
+                LocalDateTime.of(2024, 3, 8, 17, 0),
+                LocalDateTime.of(2024, 3, 8, 22, 0)
+        );
+        String eventDtoJson = objectMapper.writeValueAsString(eventDto);
+
+        MvcResult response = mockMvc.perform(post(EVENT_API_ENDPOINT)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(eventDtoJson))
+                .andExpect(status().isCreated())
+                .andReturn();
+        Event savedEvent = objectMapper.readValue(response.getResponse().getContentAsString(), Event.class);
+
+        mockMvc.perform(delete(EVENT_API_ENDPOINT + "/" + savedEvent.getId()))
+                .andExpect(status().isOk())
+                .andExpect(content().string("Event with id " + savedEvent.getId() + " deleted"));
+    }
+
+    @Test
+    @DisplayName("Delete event by id - expect status 404 when event not found")
+    void deleteById_expectStatus404_whenEventNotFound() throws Exception {
+        mockMvc.perform(delete(EVENT_API_ENDPOINT + "/nonexistent-id"))
+                .andExpect(status().isNotFound())
+                .andExpect(content().string("Event not found"));
     }
 }

@@ -137,4 +137,32 @@ class EventServiceTest {
         verify(eventRepository).findAllByIdAndTitle();
         assertEquals(expected, actual);
     }
+
+    @Test
+    @DisplayName("Delete event by id - return message when event deleted")
+    void deleteById_returnMessage_whenEventDeleted() {
+        // given
+        String id = "id";
+        Event event = new Event(id, "title", "description", "location", LocalDateTime.now(), LocalDateTime.now());
+        String expected = "Event with id " + id + " deleted";
+
+        // when
+        when(eventRepository.findById(id)).thenReturn(Optional.of(event));
+        String actual = eventService.deleteById(id);
+
+        // then
+        verify(eventRepository).findById(id);
+        verify(eventRepository).delete(event);
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    @DisplayName("Delete event by id - throw exception when event not found")
+    void deleteById_throwException_whenEventNotFound() {
+        // given
+        String id = "id";
+
+        // then
+        assertThrows(NoSuchElementException.class, () -> eventService.deleteById(id));
+    }
 }
