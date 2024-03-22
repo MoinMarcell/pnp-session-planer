@@ -5,6 +5,7 @@ import {Event, EventDto} from "../../types/Event.ts";
 import Typography from "@mui/material/Typography";
 import {LoadingButton} from "@mui/lab";
 import {toast} from "react-toastify";
+import {useNavigate} from "react-router-dom";
 
 type EventFormProps = {
     handleSave: (event: EventDto) => Promise<Event>,
@@ -14,6 +15,7 @@ type EventFormProps = {
 export default function EventForm(props: Readonly<EventFormProps>) {
     const today = new Date();
     today.setDate(today.getDate() + 1);
+    const navigate = useNavigate();
 
     const [event, setEvent] = useState<EventDto>({
         title: '',
@@ -47,7 +49,8 @@ export default function EventForm(props: Readonly<EventFormProps>) {
         setIsLoading(true);
         const toastId = toast.loading("Event wird erstellt...");
         props.handleSave(event)
-            .then(() => {
+            .then((r) => {
+                const id = r.id;
                 toast.update(toastId, {
                     render: "Event wurde erstellt!",
                     type: 'success',
@@ -56,6 +59,7 @@ export default function EventForm(props: Readonly<EventFormProps>) {
                 });
                 resetForm();
                 props.handleClose();
+                navigate(`/events/${id}`);
             })
             .catch(() => {
                 toast.update(toastId, {

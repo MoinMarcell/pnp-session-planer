@@ -5,6 +5,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.NoSuchElementException;
+
 @RestController
 @RequestMapping("/api/events")
 @RequiredArgsConstructor
@@ -19,4 +21,19 @@ public class EventController {
     public Event createEvent(@Valid @RequestBody EventDto eventDto) {
         return eventService.createEvent(eventDto);
     }
+
+    @GetMapping(
+            path = "/{id}",
+            produces = "application/json"
+    )
+    public Event getEventById(@PathVariable String id) {
+        return eventService.getEventById(id);
+    }
+
+    @ExceptionHandler(NoSuchElementException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public String handleNoSuchElementException(NoSuchElementException exception) {
+        return exception.getMessage();
+    }
+
 }

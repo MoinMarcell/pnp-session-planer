@@ -5,6 +5,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -68,5 +70,52 @@ class EventServiceTest {
 
         // then
         assertThrows(ResponseStatusException.class, () -> eventService.createEvent(eventDto));
+    }
+
+    @Test
+    @DisplayName("Get event by id - return event when found")
+    void getEventById_returnEvent_whenFound() {
+        // given
+        String id = "id";
+        Event expected = new Event(id, "title", "description", "location", LocalDateTime.now(), LocalDateTime.now());
+
+        // when
+        when(eventRepository.findById("id")).thenReturn(Optional.of(expected));
+        Event actual = eventService.getEventById("id");
+
+        // then
+        verify(eventRepository).findById("id");
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    @DisplayName("Get event by id - throw exception when not found")
+    void getEventById_throwException_whenNotFound() {
+        // given
+        String id = "id";
+
+        // then
+        assertThrows(NoSuchElementException.class, () -> eventService.getEventById(id));
+    }
+
+    @Test
+    @DisplayName("Get event by id - throw exception when id is null")
+    void getEventById_throwException_whenIdIsNull() {
+        // then
+        assertThrows(NoSuchElementException.class, () -> eventService.getEventById(null));
+    }
+
+    @Test
+    @DisplayName("Get event by id - throw exception when id is empty")
+    void getEventById_throwException_whenIdIsEmpty() {
+        // then
+        assertThrows(NoSuchElementException.class, () -> eventService.getEventById(""));
+    }
+
+    @Test
+    @DisplayName("Get event by id - throw exception when id is blank")
+    void getEventById_throwException_whenIdIsBlank() {
+        // then
+        assertThrows(NoSuchElementException.class, () -> eventService.getEventById(" "));
     }
 }

@@ -15,7 +15,9 @@ import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -181,5 +183,40 @@ class EventControllerTest {
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content(eventDtoJson))
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("Get event by id - expect status 200 and event when endpoint called")
+    void getEventById_expectStatus200AndEvent_whenEndpointCalled() throws Exception {
+        EventDto eventDto = new EventDto(
+                "title",
+                "description",
+                "location",
+                LocalDateTime.of(2024, 3, 8, 17, 0),
+                LocalDateTime.of(2024, 3, 8, 22, 0)
+        );
+        String eventDtoJson = objectMapper.writeValueAsString(eventDto);
+
+        MvcResult response = mockMvc.perform(post(EVENT_API_ENDPOINT)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(eventDtoJson))
+                .andExpect(status().isCreated())
+                .andReturn();
+        Event savedEvent = objectMapper.readValue(response.getResponse().getContentAsString(), Event.class);
+
+        MvcResult getResponse = mockMvc.perform(get(EVENT_API_ENDPOINT + "/" + savedEvent.getId()))
+                .andExpect(status().isOk())
+                .andReturn();
+        Event foundEvent = objectMapper.readValue(getResponse.getResponse().getContentAsString(), Event.class);
+
+        assertEquals(savedEvent, foundEvent);
+    }
+
+    @Test
+    @DisplayName("Get event by id - expect status 404 when event not found")
+    void getEventById_expectStatus404_whenEventNotFound() throws Exception {
+        mockMvc.perform(get(EVENT_API_ENDPOINT + "/nonexistent-id"))
+                .andExpect(status().isNotFound())
+                .andExpect(content().string("Event not found"));
     }
 }
