@@ -144,7 +144,7 @@ class EventServiceTest {
         // given
         String id = "id";
         Event event = new Event(id, "title", "description", "location", LocalDateTime.now(), LocalDateTime.now());
-        String expected = "Event with id " + id + " deleted";
+        String expected = "Event " + event.getTitle() + " deleted";
 
         // when
         when(eventRepository.findById(id)).thenReturn(Optional.of(event));
