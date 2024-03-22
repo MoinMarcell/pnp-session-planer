@@ -1,11 +1,15 @@
 import {useState} from "react";
 import NewEventDialog from "./NewEventDialog.tsx";
-import useEvents from "../../hooks/useEvents.ts";
 import EventGallery from "./EventGallery.tsx";
+import {Event, EventDto, EventWithIdAndTitle} from "../../types/Event.ts";
 
-export default function EventApp() {
+type EventAppProps = {
+    events: EventWithIdAndTitle[];
+    saveEvent: (event: EventDto) => Promise<Event>;
+}
+
+export default function EventApp(props: Readonly<EventAppProps>) {
     const [openNewEventDialog, setOpenNewEventDialog] = useState<boolean>(false);
-    const {saveEvent, events} = useEvents();
 
     function handleNewEventDialog() {
         setOpenNewEventDialog(!openNewEventDialog);
@@ -14,9 +18,9 @@ export default function EventApp() {
     return (
         <>
             <button onClick={handleNewEventDialog}>Neues Event erstellen</button>
-            <NewEventDialog handleSave={saveEvent} open={openNewEventDialog} handleClose={handleNewEventDialog}/>
+            <NewEventDialog handleSave={props.saveEvent} open={openNewEventDialog} handleClose={handleNewEventDialog}/>
 
-            <EventGallery events={events}/>
+            <EventGallery events={props.events}/>
         </>
     );
 }

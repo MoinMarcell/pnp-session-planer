@@ -7,12 +7,40 @@ import LoadSpinnerDice from "../LoadSpinnerDice.tsx";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import {Paper} from "@mui/material";
+import {LoadingButton} from "@mui/lab";
 
-export default function EventDetailsPage() {
+type EventDetailsPageProps = {
+    deleteEvent: (id: string) => Promise<string>;
+}
+
+export default function EventDetailsPage(props: Readonly<EventDetailsPageProps>) {
     const [event, setEvent] = useState<Event | null | undefined>(undefined);
+    const [isDeleting, setIsDeleting] = useState<boolean>(false);
     const params = useParams();
     const eventId = params.eventId;
     const navigate = useNavigate();
+
+    function deleteEvent() {
+        if (event) {
+            setIsDeleting(true);
+            props.deleteEvent(event.id)
+                .then((r) => {
+                    toast.success(r);
+                    navigate('/events');
+                })
+                .catch((error) => {
+                    const code = error.response.status;
+                    if (code === 404) {
+                        toast.error('Event not found');
+                    } else {
+                        toast.error('Failed to delete event: ' + error.message);
+                    }
+                })
+                .finally(() => setIsDeleting(false));
+        } else {
+            toast.error('Event is missing');
+        }
+    }
 
     function fetchEvent(): void {
         if (eventId) {
@@ -72,6 +100,15 @@ export default function EventDetailsPage() {
                 <Typography variant="body2">Wo: {event.location}</Typography>
                 <Typography variant="body2">Start: {start}</Typography>
                 <Typography variant="body2">Ende: {end}</Typography>
+                <Box sx={{
+                    width: '100%',
+                    display: 'flex',
+                    justifyContent: 'end',
+                    pt: 2,
+                }}>
+                    <LoadingButton variant="outlined" color="error" loading={isDeleting} onClick={deleteEvent}>Event
+                        löschen</LoadingButton>
+                </Box>
             </Box>
         </Paper>
     )

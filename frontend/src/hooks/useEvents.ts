@@ -18,6 +18,17 @@ export default function useEvents() {
             })
     }
 
+    async function deleteEvent(id: string): Promise<string> {
+        return axios.delete(`${EVENTS_ENDPOINT}/${id}`)
+            .then((r) => {
+                fetchEvents();
+                return r.data;
+            })
+            .catch((error) => {
+                throw new Error(error);
+            })
+    }
+
     function fetchEvents() {
         axios.get(EVENTS_ENDPOINT)
             .then(response => setEvents(response.data))
@@ -32,6 +43,7 @@ export default function useEvents() {
 
     return {
         events,
-        saveEvent
+        saveEvent,
+        deleteEvent
     }
 }
