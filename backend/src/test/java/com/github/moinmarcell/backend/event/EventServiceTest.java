@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
@@ -117,5 +118,23 @@ class EventServiceTest {
     void getEventById_throwException_whenIdIsBlank() {
         // then
         assertThrows(NoSuchElementException.class, () -> eventService.getEventById(" "));
+    }
+
+    @Test
+    @DisplayName("Get all events - return all events")
+    void getAllEvents_returnAllEvents() {
+        // given
+        Event event1 = new Event("id1", "title1", "description1", "location1", LocalDateTime.now(), LocalDateTime.now());
+        Event event2 = new Event("id2", "title2", "description2", "location2", LocalDateTime.now(), LocalDateTime.now());
+        List<Event> events = List.of(event1, event2);
+        List<EventWithIdAndTitle> expected = events.stream().map(event -> new EventWithIdAndTitle(event.getId(), event.getTitle())).toList();
+
+        // when
+        when(eventRepository.findAllByIdAndTitle()).thenReturn(expected);
+        List<EventWithIdAndTitle> actual = eventService.getAllEvents();
+
+        // then
+        verify(eventRepository).findAllByIdAndTitle();
+        assertEquals(expected, actual);
     }
 }

@@ -219,4 +219,12 @@ class EventControllerTest {
                 .andExpect(status().isNotFound())
                 .andExpect(content().string("Event not found"));
     }
+
+    @Test
+    @DisplayName("Get all events - expect status 200 and empty list when no events")
+    void getAllEvents_expectStatus200AndEmptyList_whenNoEvents() throws Exception {
+        mockMvc.perform(get(EVENT_API_ENDPOINT))
+                .andExpect(status().isOk())
+                .andExpect(content().json("[]"));
+    }
 }
