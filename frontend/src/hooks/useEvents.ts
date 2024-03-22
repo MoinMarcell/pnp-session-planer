@@ -1,6 +1,7 @@
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {Event, EventDto} from "../types/Event.ts";
 import axios from "axios";
+import {toast} from "react-toastify";
 
 export default function useEvents() {
     const [events, setEvents] = useState<Event[]>([]);
@@ -16,6 +17,18 @@ export default function useEvents() {
                 throw new Error(error);
             })
     }
+
+    function fetchEvents() {
+        axios.get(EVENTS_ENDPOINT)
+            .then(response => setEvents(response.data))
+            .catch((error) => {
+                toast.error('Failed to fetch events: ' + error.message)
+            });
+    }
+
+    useEffect(() => {
+        fetchEvents();
+    }, []);
 
     return {
         events,

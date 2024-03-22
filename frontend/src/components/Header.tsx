@@ -54,7 +54,6 @@ function ScrollTop(props: Readonly<Props>) {
         <Fade in={trigger}>
             <Box
                 onClick={handleClick}
-                role="presentation"
                 sx={{position: 'fixed', bottom: 16, right: 16, zIndex: 1000}}
             >
                 {children}
@@ -72,9 +71,9 @@ export default function Header(props: Readonly<Props>) {
         setAnchorElNav(event.currentTarget);
     };
 
-    const handleCloseNavMenu = (href: string) => {
-        navigate(href);
+    const handleCloseNavMenu = (href?: string) => {
         setAnchorElNav(null);
+        if (href) navigate(href);
     };
 
     return (
@@ -126,7 +125,7 @@ export default function Header(props: Readonly<Props>) {
                                     horizontal: 'left',
                                 }}
                                 open={Boolean(anchorElNav)}
-                                onClose={handleCloseNavMenu}
+                                onClose={() => handleCloseNavMenu()}
                                 sx={{
                                     display: {xs: 'block', md: 'none'},
                                 }}
