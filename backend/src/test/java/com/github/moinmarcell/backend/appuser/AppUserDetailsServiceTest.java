@@ -23,4 +23,17 @@ class AppUserDetailsServiceTest {
         // then
         assertEquals("test", userDetails.getUsername());
     }
+
+    @Test
+    void loadUserByUsername_userNotFound() {
+        // given
+        // when
+        when(appUserRepository.findByUsername("test")).thenReturn(Optional.empty());
+        // then
+        try {
+            appUserDetailsService.loadUserByUsername("test");
+        } catch (Exception e) {
+            assertEquals("User not found", e.getMessage());
+        }
+    }
 }
