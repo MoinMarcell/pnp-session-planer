@@ -7,14 +7,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -33,6 +38,7 @@ class EventControllerTest {
 
     @Test
     @DisplayName("Create event - expect status 201 and saved event when endpoint called")
+    @WithMockUser(roles = "admin")
     void createEvent_expectStatus201AndSavedEvent_whenEndpointCalled() throws Exception {
         EventDto eventDto = new EventDto(
                 "title",
@@ -60,6 +66,7 @@ class EventControllerTest {
 
     @Test
     @DisplayName("Create event - expect status 415 when media type is not json")
+    @WithMockUser(roles = "admin")
     void createEvent_expectStatus415_whenMediaTypeIsNotJson() throws Exception {
         EventDto eventDto = new EventDto(
                 "title",
@@ -78,6 +85,7 @@ class EventControllerTest {
 
     @Test
     @DisplayName("Create event - expect status 400 when title is blank")
+    @WithMockUser(roles = "admin")
     void createEvent_expectStatus400_whenTitleIsBlank() throws Exception {
         EventDto eventDto = new EventDto(
                 "",
@@ -96,6 +104,7 @@ class EventControllerTest {
 
     @Test
     @DisplayName("Create event - expect status 400 when location is blank")
+    @WithMockUser(roles = "admin")
     void createEvent_expectStatus400_whenLocationIsBlank() throws Exception {
         EventDto eventDto = new EventDto(
                 "title",
@@ -114,6 +123,7 @@ class EventControllerTest {
 
     @Test
     @DisplayName("Create event - expect status 400 when start is null")
+    @WithMockUser(roles = "admin")
     void createEvent_expectStatus400_whenStartIsNull() throws Exception {
         EventDto eventDto = new EventDto(
                 "title",
@@ -132,6 +142,7 @@ class EventControllerTest {
 
     @Test
     @DisplayName("Create event - expect status 400 when end is null")
+    @WithMockUser(roles = "admin")
     void createEvent_expectStatus400_whenEndIsNull() throws Exception {
         EventDto eventDto = new EventDto(
                 "title",
@@ -150,6 +161,7 @@ class EventControllerTest {
 
     @Test
     @DisplayName("Create event - expect status 400 when start is after end")
+    @WithMockUser(roles = "admin")
     void createEvent_expectStatus400_whenStartIsAfterEnd() throws Exception {
         EventDto eventDto = new EventDto(
                 "title",
@@ -168,6 +180,7 @@ class EventControllerTest {
 
     @Test
     @DisplayName("Create event - expect status 400 when start is equal to end")
+    @WithMockUser(roles = "admin")
     void createEvent_expectStatus400_whenStartIsEqualToEnd() throws Exception {
         EventDto eventDto = new EventDto(
                 "title",
@@ -198,7 +211,12 @@ class EventControllerTest {
 
         MvcResult response = mockMvc.perform(post(EVENT_API_ENDPOINT)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .content(eventDtoJson))
+                        .content(eventDtoJson)
+                        .with(authentication(new UsernamePasswordAuthenticationToken(
+                                "user",
+                                "password",
+                                List.of(new SimpleGrantedAuthority("ROLE_admin"))
+                        ))))
                 .andExpect(status().isCreated())
                 .andReturn();
         Event savedEvent = objectMapper.readValue(response.getResponse().getContentAsString(), Event.class);
@@ -229,6 +247,7 @@ class EventControllerTest {
 
     @Test
     @DisplayName("Delete event by id - expect status 200 and message when event deleted")
+    @WithMockUser(roles = "admin")
     void deleteById_expectStatus200AndMessage_whenEventDeleted() throws Exception {
         EventDto eventDto = new EventDto(
                 "title",
@@ -253,6 +272,7 @@ class EventControllerTest {
 
     @Test
     @DisplayName("Delete event by id - expect status 404 when event not found")
+    @WithMockUser(roles = "admin")
     void deleteById_expectStatus404_whenEventNotFound() throws Exception {
         mockMvc.perform(delete(EVENT_API_ENDPOINT + "/nonexistent-id"))
                 .andExpect(status().isNotFound())
@@ -261,6 +281,7 @@ class EventControllerTest {
 
     @Test
     @DisplayName("Update event - expect status 200 and updated event when endpoint called")
+    @WithMockUser(roles = "admin")
     void updateEvent_expectStatus200AndUpdatedEvent_whenEndpointCalled() throws Exception {
         EventDto eventDto = new EventDto(
                 "title",
@@ -304,6 +325,7 @@ class EventControllerTest {
 
     @Test
     @DisplayName("Update event - expect status 404 when event not found")
+    @WithMockUser(roles = "admin")
     void updateEvent_expectStatus404_whenEventNotFound() throws Exception {
         EventDto eventDto = new EventDto(
                 "title",
@@ -323,6 +345,7 @@ class EventControllerTest {
 
     @Test
     @DisplayName("Update event - expect status 400 when start is after end")
+    @WithMockUser(roles = "admin")
     void updateEvent_expectStatus400_whenStartIsAfterEnd() throws Exception {
         EventDto eventDto = new EventDto(
                 "title",
@@ -341,6 +364,7 @@ class EventControllerTest {
 
     @Test
     @DisplayName("Update event - expect status 400 when start is equal to end")
+    @WithMockUser(roles = "admin")
     void updateEvent_expectStatus400_whenStartIsEqualToEnd() throws Exception {
         EventDto eventDto = new EventDto(
                 "title",
@@ -359,6 +383,7 @@ class EventControllerTest {
 
     @Test
     @DisplayName("Update event - expect status 415 when media type is not json")
+    @WithMockUser(roles = "admin")
     void updateEvent_expectStatus415_whenMediaTypeIsNotJson() throws Exception {
         EventDto eventDto = new EventDto(
                 "title",

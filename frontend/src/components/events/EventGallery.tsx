@@ -13,6 +13,7 @@ export default function EventGallery(props: Readonly<EventGalleryProps>) {
             flexDirection: 'column',
             gap: 2,
             width: '100%',
+            mt: 2,
         }}>
             {cards}
         </Box>

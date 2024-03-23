@@ -19,15 +19,21 @@ import Fab from '@mui/material/Fab';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import Fade from '@mui/material/Fade';
 import {useNavigate} from "react-router-dom";
+import {AppUser} from "../types/AppUser.ts";
+import UserMenu from "./UserMenu.tsx";
+import {Avatar} from "@mui/material";
+import {Event, EventDto} from "../types/Event.ts";
 
 const pages = [
     {name: 'Startseite', href: '/'},
-    {name: 'Events', href: '/events'},
 ];
 
 interface Props {
     window?: () => Window;
     children?: React.ReactElement;
+    appUser: AppUser | null | undefined;
+    saveEvent: (event: EventDto) => Promise<Event>;
+    handleLogout: () => Promise<void>,
 }
 
 function ScrollTop(props: Readonly<Props>) {
@@ -64,6 +70,7 @@ function ScrollTop(props: Readonly<Props>) {
 
 export default function Header(props: Readonly<Props>) {
     const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
+    const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
 
     const navigate = useNavigate();
 
@@ -71,8 +78,17 @@ export default function Header(props: Readonly<Props>) {
         setAnchorElNav(event.currentTarget);
     };
 
+    const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
+        setAnchorElUser(event.currentTarget);
+    };
+
     const handleCloseNavMenu = (href?: string) => {
         setAnchorElNav(null);
+        if (href) navigate(href);
+    };
+
+    const handleCloseUserMenu = (href?: string) => {
+        setAnchorElUser(null);
         if (href) navigate(href);
     };
 
@@ -87,7 +103,7 @@ export default function Header(props: Readonly<Props>) {
                             variant="h6"
                             noWrap
                             component="a"
-                            href="#app-bar-with-responsive-menu"
+                            href="/"
                             sx={{
                                 mr: 2,
                                 display: {xs: 'none', md: 'flex'},
@@ -142,7 +158,7 @@ export default function Header(props: Readonly<Props>) {
                             variant="h5"
                             noWrap
                             component="a"
-                            href="#app-bar-with-responsive-menu"
+                            href="/"
                             sx={{
                                 mr: 2,
                                 display: {xs: 'flex', md: 'none'},
@@ -169,11 +185,29 @@ export default function Header(props: Readonly<Props>) {
                         </Box>
 
                         <Box sx={{flexGrow: 0}}>
-                            <Tooltip title="Anmelden">
-                                <IconButton sx={{p: 0}}>
-                                    <FontAwesomeIcon icon={faUser}/>
-                                </IconButton>
-                            </Tooltip>
+                            {
+                                !props.appUser &&
+                                <Tooltip title="Anmelden">
+                                    <IconButton sx={{p: 0}} onClick={() => navigate("/login")}>
+                                        <FontAwesomeIcon icon={faUser}/>
+                                    </IconButton>
+                                </Tooltip>
+                            }
+                            {
+                                props.appUser &&
+                                (
+                                    <>
+                                        <Tooltip title="Benutzer Menü">
+                                            <IconButton sx={{p: 0}} onClick={handleOpenUserMenu}>
+                                                <Avatar>{props.appUser.username.substring(0, 1)}</Avatar>
+                                            </IconButton>
+                                        </Tooltip>
+                                        <UserMenu handleLogout={props.handleLogout} appUser={props.appUser}
+                                                  saveEvent={props.saveEvent} anchorElUser={anchorElUser}
+                                                  handleCloseUserMenu={handleCloseUserMenu}/>
+                                    </>
+                                )
+                            }
                         </Box>
                     </Toolbar>
                 </Container>
