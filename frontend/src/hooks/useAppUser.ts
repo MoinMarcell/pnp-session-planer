@@ -8,9 +8,8 @@ export default function useAppUser() {
     function fetchMe() {
         axios.get("/api/users/me")
             .then(response => setAppUser(response.data))
-            .catch(error => {
-                setAppUser(null)
-                console.error(error)
+            .catch(() => {
+                setAppUser(null);
             });
     }
 
