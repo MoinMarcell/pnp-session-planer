@@ -14,7 +14,7 @@ export default function Main(props: Readonly<MainProps>) {
                 flexDirection: 'column',
                 alignItems: 'center',
                 width: '100%',
-                height: 'calc(100vh - 56px - 56px)',
+                mb: 9,
             }}
         >
             {props.children}

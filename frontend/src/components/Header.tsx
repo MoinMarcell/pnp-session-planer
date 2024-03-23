@@ -18,6 +18,7 @@ import useScrollTrigger from '@mui/material/useScrollTrigger';
 import Fab from '@mui/material/Fab';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import Fade from '@mui/material/Fade';
+import {useNavigate} from "react-router-dom";
 
 const pages = [
     {name: 'Startseite', href: '/'},
@@ -53,7 +54,6 @@ function ScrollTop(props: Readonly<Props>) {
         <Fade in={trigger}>
             <Box
                 onClick={handleClick}
-                role="presentation"
                 sx={{position: 'fixed', bottom: 16, right: 16, zIndex: 1000}}
             >
                 {children}
@@ -65,12 +65,15 @@ function ScrollTop(props: Readonly<Props>) {
 export default function Header(props: Readonly<Props>) {
     const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
 
+    const navigate = useNavigate();
+
     const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorElNav(event.currentTarget);
     };
 
-    const handleCloseNavMenu = () => {
+    const handleCloseNavMenu = (href?: string) => {
         setAnchorElNav(null);
+        if (href) navigate(href);
     };
 
     return (
@@ -122,13 +125,13 @@ export default function Header(props: Readonly<Props>) {
                                     horizontal: 'left',
                                 }}
                                 open={Boolean(anchorElNav)}
-                                onClose={handleCloseNavMenu}
+                                onClose={() => handleCloseNavMenu()}
                                 sx={{
                                     display: {xs: 'block', md: 'none'},
                                 }}
                             >
                                 {pages.map((page) => (
-                                    <MenuItem key={page.name} onClick={handleCloseNavMenu}>
+                                    <MenuItem key={page.name} onClick={() => handleCloseNavMenu(page.href)}>
                                         <Typography textAlign="center">{page.name}</Typography>
                                     </MenuItem>
                                 ))}
@@ -157,7 +160,7 @@ export default function Header(props: Readonly<Props>) {
                             {pages.map((page) => (
                                 <Button
                                     key={page.name}
-                                    onClick={handleCloseNavMenu}
+                                    onClick={() => handleCloseNavMenu(page.href)}
                                     sx={{my: 2, color: 'white', display: 'block'}}
                                 >
                                     {page.name}
