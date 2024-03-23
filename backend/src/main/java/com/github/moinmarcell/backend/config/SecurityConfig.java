@@ -15,6 +15,12 @@ import org.springframework.security.web.util.matcher.RegexRequestMatcher;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+
+    public static final String LOGIN_ENDPOINT = "/api/users/login";
+    public static final String EVENTS_ENDPOINT = "/api/events";
+    public static final String EVENT_ENDPOINT_WITH_ID = EVENTS_ENDPOINT + "/{id}";
+    public static final String ADMIN_ROLE = "admin";
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return Argon2PasswordEncoder.defaultsForSpringSecurity_v5_8();
@@ -26,7 +32,12 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(c -> c.sessionCreationPolicy(SessionCreationPolicy.ALWAYS))
                 .authorizeHttpRequests(c -> c
-                        .requestMatchers(HttpMethod.POST, "/api/users/login").permitAll()
+                        .requestMatchers(HttpMethod.POST, LOGIN_ENDPOINT).permitAll()
+                        .requestMatchers(HttpMethod.GET, EVENTS_ENDPOINT).permitAll()
+                        .requestMatchers(HttpMethod.GET, EVENT_ENDPOINT_WITH_ID).permitAll()
+                        .requestMatchers(HttpMethod.POST, EVENTS_ENDPOINT).hasRole(ADMIN_ROLE)
+                        .requestMatchers(HttpMethod.DELETE, EVENT_ENDPOINT_WITH_ID).hasRole(ADMIN_ROLE)
+                        .requestMatchers(HttpMethod.PUT, EVENT_ENDPOINT_WITH_ID).hasRole(ADMIN_ROLE)
                         .requestMatchers(RegexRequestMatcher.regexMatcher("^(?!/api).*$")).permitAll()
                         .anyRequest().authenticated()
                 )
