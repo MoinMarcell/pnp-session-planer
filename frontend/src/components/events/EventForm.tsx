@@ -8,8 +8,10 @@ import {toast} from "react-toastify";
 import {useNavigate} from "react-router-dom";
 
 type EventFormProps = {
-    handleSave: (event: EventDto) => Promise<Event>,
+    handleSave?: (event: EventDto) => Promise<Event>,
+    handleUpdate?: (id: string, event: EventDto) => Promise<Event>,
     handleClose: () => void,
+    event?: Event,
 }
 
 export default function EventForm(props: Readonly<EventFormProps>) {
@@ -18,11 +20,11 @@ export default function EventForm(props: Readonly<EventFormProps>) {
     const navigate = useNavigate();
 
     const [event, setEvent] = useState<EventDto>({
-        title: '',
-        description: '',
-        location: '',
-        start: new Date().toISOString().substring(0, 16),
-        end: today.toISOString().substring(0, 16),
+        title: props.event?.title ?? '',
+        description: props.event?.description ?? '',
+        location: props.event?.location ?? '',
+        start: props.event?.start ?? new Date().toISOString().substring(0, 16),
+        end: props.event?.end ?? today.toISOString().substring(0, 16),
     });
     const [isLoading, setIsLoading] = useState<boolean>(false);
 
@@ -47,31 +49,54 @@ export default function EventForm(props: Readonly<EventFormProps>) {
     function handleSubmit(e: FormEvent<HTMLFormElement>): void {
         e.preventDefault();
         setIsLoading(true);
-        const toastId = toast.loading("Event wird erstellt...");
-        props.handleSave(event)
-            .then((r) => {
-                const id = r.id;
-                toast.update(toastId, {
-                    render: "Event wurde erstellt!",
-                    type: 'success',
-                    autoClose: 5000,
-                    isLoading: false,
+        if (props.event && props.handleUpdate) {
+            const toastId = toast.loading("Event wird aktualisiert...");
+            props.handleUpdate(props.event.id, event)
+                .then(() => {
+                    toast.update(toastId, {
+                        render: "Event wurde aktualisiert!",
+                        type: 'success',
+                        autoClose: 5000,
+                        isLoading: false,
+                    });
+                    props.handleClose();
+                })
+                .catch(() => {
+                    toast.update(toastId, {
+                        render: "Fehler beim Aktualisieren des Events!",
+                        type: 'error',
+                        autoClose: 5000,
+                        isLoading: false,
+                    })
                 });
-                resetForm();
-                props.handleClose();
-                navigate(`/events/${id}`);
-            })
-            .catch(() => {
-                toast.update(toastId, {
-                    render: "Fehler beim Erstellen des Events!",
-                    type: 'error',
-                    autoClose: 5000,
-                    isLoading: false,
+        }
+        if (props.handleSave) {
+            const toastId = toast.loading("Event wird erstellt...");
+            props.handleSave(event)
+                .then((r) => {
+                    const id = r.id;
+                    toast.update(toastId, {
+                        render: "Event wurde erstellt!",
+                        type: 'success',
+                        autoClose: 5000,
+                        isLoading: false,
+                    });
+                    resetForm();
+                    props.handleClose();
+                    navigate(`/events/${id}`);
+                })
+                .catch(() => {
+                    toast.update(toastId, {
+                        render: "Fehler beim Erstellen des Events!",
+                        type: 'error',
+                        autoClose: 5000,
+                        isLoading: false,
+                    });
+                })
+                .finally(() => {
+                    setIsLoading(false);
                 });
-            })
-            .finally(() => {
-                setIsLoading(false);
-            });
+        }
     }
 
     return (
@@ -136,7 +161,7 @@ export default function EventForm(props: Readonly<EventFormProps>) {
                     : null
             }
             <LoadingButton type='submit' loading={isLoading} variant="outlined">
-                Erstellen
+                Speichern
             </LoadingButton>
         </Box>
     );

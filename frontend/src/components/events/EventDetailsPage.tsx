@@ -1,24 +1,31 @@
 import {useEffect, useState} from "react";
 import axios from "axios";
 import {Navigate, useNavigate, useParams} from "react-router-dom";
-import {Event} from "../../types/Event.ts";
+import {Event, EventDto} from "../../types/Event.ts";
 import {toast} from "react-toastify";
 import LoadSpinnerDice from "../LoadSpinnerDice.tsx";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import {Paper} from "@mui/material";
 import {LoadingButton} from "@mui/lab";
+import NewEventDialog from "./NewEventDialog.tsx";
 
 type EventDetailsPageProps = {
     deleteEvent: (id: string) => Promise<string>;
+    handleUpdate: (id: string, event: EventDto) => Promise<Event>,
 }
 
 export default function EventDetailsPage(props: Readonly<EventDetailsPageProps>) {
     const [event, setEvent] = useState<Event | null | undefined>(undefined);
     const [isDeleting, setIsDeleting] = useState<boolean>(false);
+    const [openEditEventDialog, setOpenEditEventDialog] = useState<boolean>(false);
     const params = useParams();
     const eventId = params.eventId;
     const navigate = useNavigate();
+
+    function handleUpdateEventDialog() {
+        setOpenEditEventDialog(!openEditEventDialog);
+    }
 
     function deleteEvent() {
         if (event) {
@@ -77,6 +84,14 @@ export default function EventDetailsPage(props: Readonly<EventDetailsPageProps>)
         }
     }
 
+    async function update(id: string, eventDto: EventDto) {
+        return props.handleUpdate(id, eventDto)
+            .then((r) => {
+                setEvent(r);
+                return r;
+            })
+    }
+
     useEffect(() => {
         fetchEvent();
     }, [eventId]);
@@ -119,9 +134,14 @@ export default function EventDetailsPage(props: Readonly<EventDetailsPageProps>)
                 <Box sx={{
                     width: '100%',
                     display: 'flex',
-                    justifyContent: 'end',
+                    justifyContent: 'center',
+                    gap: 2,
                     pt: 2,
                 }}>
+                    <LoadingButton variant="outlined" color="warning"
+                                   onClick={handleUpdateEventDialog}>Bearbeiten</LoadingButton>
+                    <NewEventDialog event={event} handleUpdate={update} open={openEditEventDialog}
+                                    handleClose={handleUpdateEventDialog}/>
                     <LoadingButton variant="outlined" color="error" loading={isDeleting} onClick={deleteEvent}>Event
                         löschen</LoadingButton>
                 </Box>
