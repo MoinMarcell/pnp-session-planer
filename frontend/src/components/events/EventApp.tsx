@@ -1,5 +1,5 @@
 import {useState} from "react";
-import NewEventDialog from "./NewEventDialog.tsx";
+import EventFormDialog from "./EventFormDialog.tsx";
 import EventGallery from "./EventGallery.tsx";
 import {Event, EventDto, EventWithIdAndTitle} from "../../types/Event.ts";
 
@@ -18,7 +18,7 @@ export default function EventApp(props: Readonly<EventAppProps>) {
     return (
         <>
             <button onClick={handleNewEventDialog}>Neues Event erstellen</button>
-            <NewEventDialog handleSave={props.saveEvent} open={openNewEventDialog} handleClose={handleNewEventDialog}/>
+            <EventFormDialog handleSave={props.saveEvent} open={openNewEventDialog} handleClose={handleNewEventDialog}/>
 
             <EventGallery events={props.events}/>
         </>

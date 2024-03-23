@@ -15,13 +15,13 @@ type NewEventDialogProps = {
     handleUpdate?: (id: string, event: EventDto) => Promise<Event>,
 }
 
-export default function NewEventDialog(props: Readonly<NewEventDialogProps>) {
+export default function EventFormDialog(props: Readonly<NewEventDialogProps>) {
     return (
         <Dialog
             open={props.open}
             onClose={props.handleClose}
         >
-            <DialogTitle>Event erstellen</DialogTitle>
+            <DialogTitle>{props.event ? 'Event aktualisieren' : 'Event erstellen'}</DialogTitle>
             <DialogContent>
                 <DialogContentText>
                     Hier kannst du ein neues Event erstellen und direkt veröffentlichen!

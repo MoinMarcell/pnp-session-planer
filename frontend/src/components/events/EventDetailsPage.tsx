@@ -8,7 +8,7 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import {Paper} from "@mui/material";
 import {LoadingButton} from "@mui/lab";
-import NewEventDialog from "./NewEventDialog.tsx";
+import EventFormDialog from "./EventFormDialog.tsx";
 
 type EventDetailsPageProps = {
     deleteEvent: (id: string) => Promise<string>;
@@ -140,8 +140,8 @@ export default function EventDetailsPage(props: Readonly<EventDetailsPageProps>)
                 }}>
                     <LoadingButton variant="outlined" color="warning"
                                    onClick={handleUpdateEventDialog}>Bearbeiten</LoadingButton>
-                    <NewEventDialog event={event} handleUpdate={update} open={openEditEventDialog}
-                                    handleClose={handleUpdateEventDialog}/>
+                    <EventFormDialog event={event} handleUpdate={update} open={openEditEventDialog}
+                                     handleClose={handleUpdateEventDialog}/>
                     <LoadingButton variant="outlined" color="error" loading={isDeleting} onClick={deleteEvent}>Event
                         löschen</LoadingButton>
                 </Box>
