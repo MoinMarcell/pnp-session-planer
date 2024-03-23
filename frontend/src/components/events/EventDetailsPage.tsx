@@ -9,10 +9,12 @@ import Typography from "@mui/material/Typography";
 import {Paper} from "@mui/material";
 import {LoadingButton} from "@mui/lab";
 import EventFormDialog from "./EventFormDialog.tsx";
+import Button from "@mui/material/Button";
 
 type EventDetailsPageProps = {
     deleteEvent: (id: string) => Promise<string>;
     handleUpdate: (id: string, event: EventDto) => Promise<Event>,
+    isAppUserAdmin: boolean,
 }
 
 export default function EventDetailsPage(props: Readonly<EventDetailsPageProps>) {
@@ -39,7 +41,7 @@ export default function EventDetailsPage(props: Readonly<EventDetailsPageProps>)
                         autoClose: 5000,
                         isLoading: false,
                     });
-                    navigate('/events');
+                    navigate('/');
                 })
                 .catch((error) => {
                     const code = error.response.status;
@@ -80,7 +82,7 @@ export default function EventDetailsPage(props: Readonly<EventDetailsPageProps>)
                 });
         } else {
             toast.error('ID is missing');
-            navigate('/events')
+            navigate('/')
         }
     }
 
@@ -101,7 +103,7 @@ export default function EventDetailsPage(props: Readonly<EventDetailsPageProps>)
     }
 
     if (event === null) {
-        return <Navigate to={"/events"}/>
+        return <Navigate to={"/"}/>
     }
 
     const start: string = new Date(event.start).toLocaleString("de", {
@@ -120,32 +122,40 @@ export default function EventDetailsPage(props: Readonly<EventDetailsPageProps>)
     });
 
     return (
-        <Paper sx={{
-            padding: 2,
-            mt: 2,
-            width: '100%',
-        }}>
-            <Box>
-                <Typography sx={{textAlign: 'center'}} variant="h3">{event.title}</Typography>
-                <Typography sx={{textAlign: 'center'}} variant="body1">{event.description}</Typography>
-                <Typography variant="body2">Wo: {event.location}</Typography>
-                <Typography variant="body2">Start: {start}</Typography>
-                <Typography variant="body2">Ende: {end}</Typography>
-                <Box sx={{
-                    width: '100%',
-                    display: 'flex',
-                    justifyContent: 'center',
-                    gap: 2,
-                    pt: 2,
-                }}>
-                    <LoadingButton variant="outlined" color="warning"
-                                   onClick={handleUpdateEventDialog}>Bearbeiten</LoadingButton>
-                    <EventFormDialog event={event} handleUpdate={update} open={openEditEventDialog}
-                                     handleClose={handleUpdateEventDialog}/>
-                    <LoadingButton variant="outlined" color="error" loading={isDeleting} onClick={deleteEvent}>Event
-                        löschen</LoadingButton>
+        <Box sx={{width: '100%', display: 'flex', gap: 2, flexDirection: 'column'}}>
+            <Paper sx={{
+                padding: 2,
+                mt: 2,
+            }}>
+                <Box>
+                    <Typography sx={{textAlign: 'center'}} variant="h3">{event.title}</Typography>
+                    <Typography sx={{textAlign: 'center'}} variant="body1">{event.description}</Typography>
+                    <Typography variant="body2">Wo: {event.location}</Typography>
+                    <Typography variant="body2">Start: {start}</Typography>
+                    <Typography variant="body2">Ende: {end}</Typography>
+                    {
+                        props.isAppUserAdmin &&
+                        <Box sx={{
+                            width: '100%',
+                            display: 'flex',
+                            justifyContent: 'center',
+                            gap: 2,
+                            pt: 2,
+                        }}>
+                            <LoadingButton variant="outlined" color="warning"
+                                           onClick={handleUpdateEventDialog}>Bearbeiten</LoadingButton>
+                            <EventFormDialog event={event} handleUpdate={update} open={openEditEventDialog}
+                                             handleClose={handleUpdateEventDialog}/>
+                            <LoadingButton variant="outlined" color="error" loading={isDeleting} onClick={deleteEvent}>Event
+                                löschen</LoadingButton>
+                        </Box>
+                    }
                 </Box>
+            </Paper>
+            <Box>
+                <Button onClick={() => navigate("/")} color="info" variant="contained" sx={{width: '100%'}}>Zurück zur
+                    Übersicht</Button>
             </Box>
-        </Paper>
+        </Box>
     )
 }

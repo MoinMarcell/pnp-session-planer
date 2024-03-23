@@ -1,5 +1,6 @@
 package com.github.moinmarcell.backend.appuser;
 
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -29,6 +30,12 @@ public class AppUserController {
     @PostMapping("/login")
     public void login() {
         // No need to implement anything here
+    }
+
+    @PostMapping("/logout")
+    public void logout(HttpSession session) {
+        SecurityContextHolder.clearContext();
+        session.invalidate();
     }
 
     @PostMapping("/create-admin")

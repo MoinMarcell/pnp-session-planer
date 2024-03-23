@@ -68,7 +68,8 @@ export default function EventForm(props: Readonly<EventFormProps>) {
                         autoClose: 5000,
                         isLoading: false,
                     })
-                });
+                })
+                .finally(() => setIsLoading(false));
         }
         if (props.handleSave) {
             const toastId = toast.loading("Event wird erstellt...");
