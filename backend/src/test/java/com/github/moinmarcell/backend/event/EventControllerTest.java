@@ -258,4 +258,120 @@ class EventControllerTest {
                 .andExpect(status().isNotFound())
                 .andExpect(content().string("Event not found"));
     }
+
+    @Test
+    @DisplayName("Update event - expect status 200 and updated event when endpoint called")
+    void updateEvent_expectStatus200AndUpdatedEvent_whenEndpointCalled() throws Exception {
+        EventDto eventDto = new EventDto(
+                "title",
+                "description",
+                "location",
+                LocalDateTime.of(2024, 3, 8, 17, 0),
+                LocalDateTime.of(2024, 3, 8, 22, 0)
+        );
+        String eventDtoJson = objectMapper.writeValueAsString(eventDto);
+
+        MvcResult response = mockMvc.perform(post(EVENT_API_ENDPOINT)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(eventDtoJson))
+                .andExpect(status().isCreated())
+                .andReturn();
+        Event savedEvent = objectMapper.readValue(response.getResponse().getContentAsString(), Event.class);
+
+        EventDto updatedEventDto = new EventDto(
+                "updated title",
+                "updated description",
+                "updated location",
+                LocalDateTime.of(2024, 3, 8, 18, 0),
+                LocalDateTime.of(2024, 3, 8, 23, 0)
+        );
+        String updatedEventDtoJson = objectMapper.writeValueAsString(updatedEventDto);
+
+        MvcResult updateResponse = mockMvc.perform(put(EVENT_API_ENDPOINT + "/" + savedEvent.getId())
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(updatedEventDtoJson))
+                .andExpect(status().isOk())
+                .andReturn();
+        Event updatedEvent = objectMapper.readValue(updateResponse.getResponse().getContentAsString(), Event.class);
+
+        assertEquals(updatedEventDto.title(), updatedEvent.getTitle());
+        assertEquals(updatedEventDto.description(), updatedEvent.getDescription());
+        assertEquals(updatedEventDto.location(), updatedEvent.getLocation());
+        assertEquals(updatedEventDto.start(), updatedEvent.getStart());
+        assertEquals(updatedEventDto.end(), updatedEvent.getEnd());
+        assertEquals(savedEvent.getId(), updatedEvent.getId());
+    }
+
+    @Test
+    @DisplayName("Update event - expect status 404 when event not found")
+    void updateEvent_expectStatus404_whenEventNotFound() throws Exception {
+        EventDto eventDto = new EventDto(
+                "title",
+                "description",
+                "location",
+                LocalDateTime.of(2024, 3, 8, 17, 0),
+                LocalDateTime.of(2024, 3, 8, 22, 0)
+        );
+        String eventDtoJson = objectMapper.writeValueAsString(eventDto);
+
+        mockMvc.perform(put(EVENT_API_ENDPOINT + "/nonexistent-id")
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(eventDtoJson))
+                .andExpect(status().isNotFound())
+                .andExpect(content().string("Event not found"));
+    }
+
+    @Test
+    @DisplayName("Update event - expect status 400 when start is after end")
+    void updateEvent_expectStatus400_whenStartIsAfterEnd() throws Exception {
+        EventDto eventDto = new EventDto(
+                "title",
+                "description",
+                "location",
+                LocalDateTime.of(2024, 3, 8, 22, 0),
+                LocalDateTime.of(2024, 3, 8, 17, 0)
+        );
+        String eventDtoJson = objectMapper.writeValueAsString(eventDto);
+
+        mockMvc.perform(put(EVENT_API_ENDPOINT + "/id")
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(eventDtoJson))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("Update event - expect status 400 when start is equal to end")
+    void updateEvent_expectStatus400_whenStartIsEqualToEnd() throws Exception {
+        EventDto eventDto = new EventDto(
+                "title",
+                "description",
+                "location",
+                LocalDateTime.of(2024, 3, 8, 17, 0),
+                LocalDateTime.of(2024, 3, 8, 17, 0)
+        );
+        String eventDtoJson = objectMapper.writeValueAsString(eventDto);
+
+        mockMvc.perform(put(EVENT_API_ENDPOINT + "/id")
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(eventDtoJson))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("Update event - expect status 415 when media type is not json")
+    void updateEvent_expectStatus415_whenMediaTypeIsNotJson() throws Exception {
+        EventDto eventDto = new EventDto(
+                "title",
+                "description",
+                "location",
+                LocalDateTime.of(2024, 3, 8, 17, 0),
+                LocalDateTime.of(2024, 3, 8, 22, 0)
+        );
+        String eventDtoJson = objectMapper.writeValueAsString(eventDto);
+
+        mockMvc.perform(put(EVENT_API_ENDPOINT + "/id")
+                        .contentType(MediaType.APPLICATION_XML_VALUE)
+                        .content(eventDtoJson))
+                .andExpect(status().isUnsupportedMediaType());
+    }
 }

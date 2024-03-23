@@ -165,4 +165,97 @@ class EventServiceTest {
         // then
         assertThrows(NoSuchElementException.class, () -> eventService.deleteById(id));
     }
+
+    @Test
+    @DisplayName("Update event - return updated event when method called")
+    void updateEvent_returnUpdatedEvent_whenMethodCalled() {
+        // given
+        String id = "id";
+        EventDto eventDto = new EventDto(
+                "title",
+                "description",
+                "location",
+                LocalDateTime.of(2024, 3, 8, 17, 0),
+                LocalDateTime.of(2024, 3, 8, 22, 0)
+        );
+        Event event = new Event(id, "old title", "old description", "old location", LocalDateTime.now(), LocalDateTime.now());
+        Event expected = Event.fromDto(eventDto);
+
+        // when
+        when(eventRepository.findById(id)).thenReturn(Optional.of(event));
+        when(eventRepository.save(event)).thenReturn(expected);
+        Event actual = eventService.updateEvent(id, eventDto);
+
+        // then
+        verify(eventRepository).findById(id);
+        verify(eventRepository).save(event);
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    @DisplayName("Update event - throw exception when start is after end")
+    void updateEvent_throwException_whenStartIsAfterEnd() {
+        // given
+        String id = "id";
+        EventDto eventDto = new EventDto(
+                "title",
+                "description",
+                "location",
+                LocalDateTime.of(2024, 3, 8, 22, 0),
+                LocalDateTime.of(2024, 3, 8, 17, 0)
+        );
+
+        // then
+        assertThrows(ResponseStatusException.class, () -> eventService.updateEvent(id, eventDto));
+    }
+
+    @Test
+    @DisplayName("Update event - throw exception when start is equal to end")
+    void updateEvent_throwException_whenStartIsEqualToEnd() {
+        // given
+        String id = "id";
+        EventDto eventDto = new EventDto(
+                "title",
+                "description",
+                "location",
+                LocalDateTime.of(2024, 3, 8, 17, 0),
+                LocalDateTime.of(2024, 3, 8, 17, 0)
+        );
+
+        // then
+        assertThrows(ResponseStatusException.class, () -> eventService.updateEvent(id, eventDto));
+    }
+
+    @Test
+    @DisplayName("Update event - throw exception when event not found")
+    void updateEvent_throwException_whenEventNotFound() {
+        // given
+        String id = "id";
+        EventDto eventDto = new EventDto(
+                "title",
+                "description",
+                "location",
+                LocalDateTime.of(2024, 3, 8, 17, 0),
+                LocalDateTime.of(2024, 3, 8, 22, 0)
+        );
+
+        // then
+        assertThrows(NoSuchElementException.class, () -> eventService.updateEvent(id, eventDto));
+    }
+
+    @Test
+    @DisplayName("Update event - throw exception when id is null")
+    void updateEvent_throwException_whenIdIsNull() {
+        // given
+        EventDto eventDto = new EventDto(
+                "title",
+                "description",
+                "location",
+                LocalDateTime.of(2024, 3, 8, 17, 0),
+                LocalDateTime.of(2024, 3, 8, 22, 0)
+        );
+
+        // then
+        assertThrows(NoSuchElementException.class, () -> eventService.updateEvent(null, eventDto));
+    }
 }

@@ -15,7 +15,7 @@ public class EventService {
     private final EventRepository eventRepository;
 
     Event createEvent(@NotNull EventDto eventDto) {
-        if (!isValidEventDuration(eventDto)) {
+        if (isValidEventDuration(eventDto)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Start must be before end");
         }
 
@@ -39,7 +39,17 @@ public class EventService {
         return "Event " + event.getTitle() + " deleted";
     }
 
+    Event updateEvent(@NotNull String id, @NotNull EventDto eventDto) {
+        if (isValidEventDuration(eventDto)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Start must be before end");
+        }
+
+        Event event = getEventById(id);
+        event.updateFromDto(eventDto);
+        return eventRepository.save(event);
+    }
+
     private boolean isValidEventDuration(@NotNull EventDto eventDto) {
-        return eventDto.start().isBefore(eventDto.end()) && !eventDto.start().isEqual(eventDto.end());
+        return !eventDto.start().isBefore(eventDto.end()) || eventDto.start().isEqual(eventDto.end());
     }
 }

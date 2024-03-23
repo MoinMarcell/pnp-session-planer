@@ -44,6 +44,15 @@ public class EventController {
         return eventService.deleteById(id);
     }
 
+    @PutMapping(
+            path = "/{id}",
+            consumes = "application/json",
+            produces = "application/json"
+    )
+    public Event updateEvent(@PathVariable String id, @Valid @RequestBody EventDto eventDto) {
+        return eventService.updateEvent(id, eventDto);
+    }
+
     @ExceptionHandler(NoSuchElementException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public String handleNoSuchElementException(NoSuchElementException exception) {

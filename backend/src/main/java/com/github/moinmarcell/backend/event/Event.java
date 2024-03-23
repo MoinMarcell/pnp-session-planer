@@ -30,4 +30,12 @@ public class Event {
                 eventDto.start(),
                 eventDto.end());
     }
+
+    public void updateFromDto(EventDto eventDto) {
+        this.title = eventDto.title();
+        this.description = eventDto.description();
+        this.location = eventDto.location();
+        this.start = eventDto.start();
+        this.end = eventDto.end();
+    }
 }
