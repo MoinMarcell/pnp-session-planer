@@ -86,4 +86,34 @@ class AppUserControllerTest {
                         .content(appUserDtoJson))
                 .andExpect(status().isCreated());
     }
+
+    @Test
+    void createGameMasterUser_expect401() throws Exception {
+        AppUserDto appUserDto = new AppUserDto("test", "test");
+        String appUserDtoJson = objectMapper.writeValueAsString(appUserDto);
+
+        mockMvc.perform(post("/api/users/create-gm")
+                        .contentType("application/json")
+                        .content(appUserDtoJson))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @WithMockUser
+    void logout() throws Exception {
+        mockMvc.perform(post("/api/users/logout"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void logout_expect401() throws Exception {
+        mockMvc.perform(post("/api/users/logout"))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void login() throws Exception {
+        mockMvc.perform(post("/api/users/login"))
+                .andExpect(status().isOk());
+    }
 }
